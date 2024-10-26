@@ -1,0 +1,1 @@
+Simple Apple-1 C project configuration with cc65
