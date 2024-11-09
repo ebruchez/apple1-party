@@ -13,6 +13,8 @@
 #define CR 0xD
 #define KBD_CR 0x8D
 
+#define PRINT_BIG_GAP 2
+
 void a1_cputc(char c) {
     while ((*((char*)DSP_DATA) & 0x80) != 0)
         ;
@@ -81,9 +83,17 @@ void print_digit(uint8_t digit) {
 
 void print_big(const char *text) {
     uint8_t row, column;
+    uint8_t count = strlen(text);
+    uint8_t margin = (40 - DIGIT_WIDTH * count - PRINT_BIG_GAP * (count - 1)) / 2;
     for (row = 0; row < DIGIT_HEIGHT; row++) {
         const char *p = text;
         char c;
+        {
+            uint8_t i;
+            for (i = 0; i < margin; i++) {
+                a1_cputc(' ');
+            }
+        }
         while (c = *p++) {
             if (c >= '0' && c <= '9') {
                 const uint8_t digit = c - '0';
@@ -94,7 +104,12 @@ void print_big(const char *text) {
                         a1_cputc(' ');
                     }
                 }
-                a1_cputs("  ");
+                {
+                    uint8_t i;
+                    for (i = 0; i < PRINT_BIG_GAP; i++) {
+                        a1_cputc(' ');
+                    }
+                }
             }
         }
         a1_cputc('\r');

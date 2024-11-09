@@ -108,9 +108,10 @@ int main () {
 
     a1_cputs("\r\r");
     print_big("2024");
+    a1_cputc('\r');
 
     while(1) {
-        a1_cputs("\rWelcome to the 2024 Chestnut Party!\r\rA = Check in\rD = Delete entry\r\r");
+        a1_cputs("\rWelcome to the 2024 Chestnut Party!\r\rA = Check in\rD = Delete entry\rL = List entries\r\r");
 
         switch (a1_cgetc() & 0x7F) {
             case 'A':
@@ -129,11 +130,13 @@ int main () {
                 a1_cputs("Entry number to remove: ");
                 {
                     uint16_t index = a1_read_number();
-                    if (index <= count_entries())
+                    if (index > 0 && index <= count_entries())
                         delete_entry(index);
                     else
                         a1_cputs("\r\rInvalid entry number!\r");
                 }
+                break;
+            case 'L':
                 break;
             default:
                 continue;
@@ -147,7 +150,6 @@ int main () {
 
         itoa(count_guests(), line_buffer, 10);
         print_big(line_buffer);
-        a1_cputc('\r');
     }
 
     return (0);
