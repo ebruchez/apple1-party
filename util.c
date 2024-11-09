@@ -106,7 +106,7 @@ uint16_t a1_read_number() {
     uint8_t digits = 0;
     while(1) {
         const char c = a1_cgetc() & 0x7F;
-        if (c >= '0' && c <= '9' && digits < 5) {
+        if (c >= '0' && c <= '9' && digits < 4) {
             a1_cputc(c);
             number = number * 10 + (c - '0');
             digits++;

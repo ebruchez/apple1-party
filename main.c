@@ -54,11 +54,48 @@ uint16_t count_guests() {
     return count;
 }
 
+uint16_t count_entries() {
+    uint16_t count = 0;
+    Entry *current = head;
+    while (current != NULL) {
+        count++;
+        current = current->next;
+    }
+    return count;
+}
+
+void delete_entry(uint16_t position) {
+    if (position == 1) {
+        Entry *temp = head;
+        head = head->next;
+        free(temp);
+    } else {
+        Entry *current = head;
+        uint16_t i;
+        for (i = 1; i < position - 1; i++) {
+            current = current->next;
+        }
+        {
+            Entry *temp = current->next;
+            current->next = temp->next;
+            free(temp);
+        }
+    }
+}
+
 void print_guests() {
     uint8_t position = 1;
     Entry *current = head;
     while (current != NULL) {
-        cprintf("%d. %s - %d guests\r", position, current->name, current->count);
+//        cprintf("%d. %s - %d guests\r", position, current->name, current->count);
+        itoa(position, line_buffer, 10);
+        a1_cputs(line_buffer);
+        a1_cputs(". ");
+        a1_cputs(current->name);
+        a1_cputs(" - ");
+        itoa(current->count, line_buffer, 10);
+        a1_cputs(line_buffer);
+        a1_cputs(" guests\r");
         current = current->next;
         position++;
     }
@@ -69,21 +106,39 @@ void print_guests() {
 
 int main () {
 
-    a1_cputc('\r');
+    a1_cputs("\r\r");
     print_big("2024");
 
     while(1) {
+        a1_cputs("\rWelcome to the 2024 Chestnut Party!\r\rA = Check in\rD = Delete entry\r\r");
 
-//        cprintf("Max %d, avail %d\r\r", __heapmaxavail(), __heapmemavail());
+        switch (a1_cgetc() & 0x7F) {
+            case 'A':
+                a1_cputs("Enter your name: ");
+                a1_read_line(line_buffer, LINE_BUFFER_LEN);
+//                cprintf("\rWelcome, %s!\r\r", line_buffer);
+                a1_cputs("\rWelcome, ");
+                a1_cputs(line_buffer);
+                a1_cputs("!\r\r");
 
-        a1_cputs("\rWelcome to the Chestnut Party!\r\r");
+                a1_cputs("Number of guests to check in: ");
+                append(new_entry(strdup(line_buffer), a1_read_number()));
 
-        a1_cputs("Enter your name: ");
-        a1_read_line(line_buffer, LINE_BUFFER_LEN);
-        cprintf("\rWelcome, %s!\r\r", line_buffer);
-
-        a1_cputs("How many guests are you checking in? ");
-        append(new_entry(strdup(line_buffer), a1_read_number()));
+                break;
+            case 'D':
+                a1_cputs("Entry number to remove: ");
+                {
+                    uint16_t index = a1_read_number();
+                    if (index <= count_entries())
+                        delete_entry(index);
+                    else
+                        a1_cputs("\r\rInvalid entry number!\r");
+                }
+                break;
+            default:
+                continue;
+                break;
+        }
 
         a1_cputc('\r');
         a1_cputc('\r');
