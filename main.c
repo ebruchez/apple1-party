@@ -111,19 +111,30 @@ int main () {
     a1_cputc('\r');
 
     while(1) {
-        a1_cputs("\rWelcome to the 2024 Chestnut Party!\r\rA = Check in\rD = Delete entry\rL = List entries\r\r");
+        a1_cputs("\rWelcome to the 2024 Chestnut Party!\r\rC = Check in\rD = Delete entry\rL = List entries\r\r");
 
         switch (a1_cgetc() & 0x7F) {
-            case 'A':
-                a1_cputs("Enter your name: ");
-                a1_read_line(line_buffer, LINE_BUFFER_LEN);
+            case 'C':
+                while(1) {
+                    a1_cputs("Please enter your name: ");
+                    a1_read_line(line_buffer, LINE_BUFFER_LEN);
+                    if (strlen(line_buffer) > 0) {
+                        break;
+                    }
+                    a1_cputs("\rInvalid name!\r\r");
+                }
 //                cprintf("\rWelcome, %s!\r\r", line_buffer);
-                a1_cputs("\rWelcome, ");
+                a1_cputs("\rWelcome to the party, ");
                 a1_cputs(line_buffer);
                 a1_cputs("!\r\r");
 
                 a1_cputs("Number of guests to check in: ");
                 append(new_entry(strdup(line_buffer), a1_read_number()));
+
+                a1_cputs("\r\rYou are guest group number ");
+                itoa(count_entries(), line_buffer, 10);
+                a1_cputs(line_buffer);
+                a1_cputs(". Have fun!");
 
                 break;
             case 'D':
